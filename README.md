@@ -5,5 +5,5 @@ Ein 2D Adventure RPG.
 Sobald es etwas läuft, gebe ich hier einen Link zum Live Spielen.
 
 # Mitmachen
-Jeder ist eingeladen mitzumachen. Ideen, Konzepte und Unfug können im Wiki Diskutiert werden:
+Jeder ist eingeladen mitzumachen. Ideen, Konzepte und Unfug können im Wiki diskutiert werden:
 https://github.com/sarbot/garleon/wiki
