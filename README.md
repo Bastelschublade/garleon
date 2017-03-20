@@ -1,5 +1,5 @@
 # Garleon
-Ein 2D Adventure RPG. Mit ausblick auf Multiplayer OpenWorld.
+Ein 2D Adventure RPG. Mit Ausblick auf Multiplayer OpenWorld.
 
 # Spielen
 Sobald es etwas läuft, gebe ich hier einen Link zum Live Spielen.
