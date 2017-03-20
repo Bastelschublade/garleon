@@ -9,7 +9,7 @@ Jeder ist eingeladen mitzumachen. Ideen, Konzepte und Unfug können im Wiki disk
 https://github.com/sarbot/garleon/wiki
 
 # Credits
-Framework -> https://libgdx.badlogicgames.com/
-Tiles/GFX -> http://opengameart.org/
-Inspiration -> http://flarerpg.org/
-Tiled -> http://www.mapeditor.org/
+- Framework -> https://libgdx.badlogicgames.com/
+- Tiles/GFX -> http://opengameart.org/
+- Inspiration -> http://flarerpg.org/
+- Tiled -> http://www.mapeditor.org/
