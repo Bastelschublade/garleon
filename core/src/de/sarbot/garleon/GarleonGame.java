@@ -33,19 +33,20 @@ public class GarleonGame extends Game {
 	private TextureRegion[] horseRegion;
 	private Animation<TextureRegion> horseAnimation;
 	private float timer;
+	private Player player;
 
 
 	@Override
 	public void create () {
-        width = 800;
         height = 480;
+        width = height * Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
         speed = 400; //cam speed right now can be reused if cam "fixed" to player
         cam = new OrthographicCamera();
-        cam.setToOrtho(false, 800,800);
+        cam.setToOrtho(false, width,height);
         cam.position.x = Gdx.graphics.getWidth()/2;
         cam.position.y = 310;
         cam.update();
-        view = new StretchViewport(width, height, cam);
+        view = new StretchViewport(width, height, cam); //does nothing atm
         batch = new SpriteBatch();
         map = new TmxMapLoader().load("test/map2.tmx");
         mapRenderer = new IsometricTiledMapRenderer(map);
@@ -55,23 +56,46 @@ public class GarleonGame extends Game {
         horseAnimation = new Animation(0.1f, horseRegion);
         horseAnimation.setPlayMode(Animation.PlayMode.LOOP);
         timer = 0;
+
+        player = new Player();
 	}
+
 
 	@Override
 	public void render () {
+
+        //height = 480;
+        //width = height * Gdx.graphics.getWidth() / Gdx.graphics.getHeight();
+        //cam.setToOrtho(false, width, height);
 	    float delta = Gdx.graphics.getDeltaTime();
 	    timer += delta;
 	    handleInput(delta);
+
+	    player.update(delta);
+
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        cam.position.x = player.position.x;
+        cam.position.y = player.position.y;
         cam.update();
+
+        //render map
         mapRenderer.setView(cam);
         mapRenderer.render();
+
+        //render objects into map
         mapRenderer.getBatch().begin();
         mapRenderer.getBatch().draw(horseRegion[3], 900, 300);
         mapRenderer.getBatch().draw(horseAnimation.getKeyFrame(timer), 1000, 250);
+        mapRenderer.getBatch().draw(horseRegion[1], 0f, 2*32f, 100, 100);
+        player.render(mapRenderer.getBatch());
+        //System.out.print(mapRenderer.getUnitScale());
         mapRenderer.getBatch().end();
+
+        //render interface
         batch.begin();
+        batch.draw(horseRegion[1], 0f, 0);
         batch.end();
 
 	}
@@ -83,17 +107,20 @@ public class GarleonGame extends Game {
 
 	public void handleInput(float delta){
 	    //Arrow Keys
+        player.direction.x = 0;
+        player.direction.y = 0;
+
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-            cam.position.x += speed*delta;
+            player.direction.x += 1;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-            cam.position.x -= speed*delta;
+            player.direction.x -= 1;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.UP)){
-            cam.position.y += speed*delta;
+            player.direction.y += 1;
         }
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
-            cam.position.y -= speed*delta;
+            player.direction.y -= 1;
         }
     }
 }
