@@ -1,4 +1,4 @@
-package de.sarbot.garleon;
+package de.sarbot.garleon.Objects;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import de.sarbot.garleon.Tools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,9 +100,7 @@ public class Player implements Disposable {
     }
 
     public void render(Batch batch){
-
         Animation<TextureRegion> stateAnimation = idleAnimations.get(orientation);
-
         switch (state){
             case Dieing:
                 stateAnimation = idleAnimations.get(orientation);
@@ -116,10 +115,7 @@ public class Player implements Disposable {
                 stateAnimation = walkAnimations.get(orientation);
                 break;
         }
-        batch.draw(stateAnimation.getKeyFrame(stateTime), position.x, position.y, 150, 150);
-
-
-
+        batch.draw(stateAnimation.getKeyFrame(stateTime), position.x, position.y, 100, 100);
     }
 
     @Override
