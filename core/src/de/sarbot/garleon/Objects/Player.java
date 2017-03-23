@@ -38,13 +38,13 @@ public class Player implements Disposable {
 
     public Player (){
 
-        position = new Vector2(500,0); //what koord is this?
+        position = new Vector2(3500,-80); //what koord is this?
         direction = new Vector2(0, 0);
         walkSpeed = 150;
         frameDuration = 10 / walkSpeed;
         state = State.Idle;
 
-        texture = new Texture("test/troll.png");
+        texture = new Texture("creatures/troll.png");
         regions = TextureRegion.split(texture, 256,256);
 
 

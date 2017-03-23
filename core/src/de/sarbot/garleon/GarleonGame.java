@@ -50,7 +50,9 @@ public class GarleonGame extends Game {
         player = new Player();
 
         //boot the game
+        if (debug>0) System.out.println("booted");
         setScreen(new BootScreen(this));
+
 
 	}
 

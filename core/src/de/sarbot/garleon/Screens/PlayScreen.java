@@ -32,6 +32,7 @@ public class PlayScreen implements Screen{
 
     public PlayScreen(GarleonGame gam){
         game = gam;
+        if(game.debug>0) System.out.println("create Play Screen");
 
     }
 
@@ -46,10 +47,10 @@ public class PlayScreen implements Screen{
         view.apply();
         cam.update(); //calls the view? no..
         batch = new SpriteBatch();
-        map = new TmxMapLoader().load("test/map2.tmx");
+        map = new TmxMapLoader().load("maps/base.tmx");
         mapRenderer = new IsometricTiledMapRenderer(map);
 
-        horseSprite = new Texture("test/horse.png");
+        horseSprite = new Texture("creatures/horse.png");
         horseRegion = TextureRegion.split(horseSprite, 128, 128)[0];
         horseAnimation = new Animation(0.1f, horseRegion);
         horseAnimation.setPlayMode(Animation.PlayMode.LOOP);
