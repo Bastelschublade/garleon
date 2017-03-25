@@ -7,13 +7,21 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import de.sarbot.garleon.GarleonGame;
+import de.sarbot.garleon.Objects.Joystick;
 
 /**
  * Created by sarbot on 22.03.17.
@@ -29,6 +37,21 @@ public class PlayScreen implements Screen{
     private TextureRegion[] horseRegion;
     private Animation<TextureRegion> horseAnimation;
     private float timer;
+
+    private Stage hudStage;
+    //move this to interface actor and let him fire the joystick actor maybe
+    private Joystick stick;
+    private SpriteBatch hudBatch;
+    private Skin skin;
+    private Touchpad.TouchpadStyle padStyle;
+    private Texture pad;
+    private Drawable touchBackground;
+    private Drawable touchKnob;
+    private Texture blockTexture;
+    private Sprite blockSprite;
+    private OrthographicCamera camera;
+    private float blockSpeed;
+
 
     public PlayScreen(GarleonGame gam){
         game = gam;
@@ -56,6 +79,34 @@ public class PlayScreen implements Screen{
         horseAnimation.setPlayMode(Animation.PlayMode.LOOP);
         timer = 0;
 
+        //interface stuff
+        //TODO move everything into one interface actor some how
+        hudStage = new Stage();
+
+        hudBatch = new SpriteBatch();
+        //Create camera
+        float aspectRatio = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 10f*aspectRatio, 10f);
+        skin = new Skin();
+        skin.add("touchBackground", new Texture("test/pad.png"));
+        skin.add("touchKnob", new Texture("test/knob.png"));
+        padStyle = new Touchpad.TouchpadStyle();
+        touchBackground = skin.getDrawable("touchBackground");
+        touchKnob = skin.getDrawable("touchKnob");
+        //Apply the Drawables to the TouchPad Style
+        padStyle.background = touchBackground;
+        padStyle.knob = touchKnob;
+        //Create new TouchPad with the created style
+        stick = new Joystick(10, padStyle);
+        //setBounds(x,y,width,height)
+        stick.setBounds(15, 15, 150, 150);
+
+        hudStage = new Stage(new FillViewport(game.width, game.height, camera));
+        hudStage.addActor(stick);
+        Gdx.input.setInputProcessor(hudStage);
+
+
     }
 
     @Override
@@ -66,7 +117,9 @@ public class PlayScreen implements Screen{
         //cam.setToOrtho(false, width, height);
         //float delta = Gdx.graphics.getDeltaTime();
         timer += delta;
-        handleInput(delta);
+
+        hudStage.act();
+        handleInput(delta, stick);
 
         game.player.update(delta);
 
@@ -94,6 +147,8 @@ public class PlayScreen implements Screen{
         batch.begin();
         //batch.draw(horseRegion[1], 0f, 0);
         batch.end();
+
+        hudStage.draw();
 
     }
 
@@ -124,10 +179,12 @@ public class PlayScreen implements Screen{
     }
 
 
-    public void handleInput(float delta){
+    public void handleInput(float delta, Joystick stick){
         //Arrow Keys
         game.player.direction.x = 0;
         game.player.direction.y = 0;
+
+
 
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
             game.player.direction.x += 1;
@@ -140,6 +197,14 @@ public class PlayScreen implements Screen{
         }
         if(Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             game.player.direction.y -= 1;
+        }
+
+        if(stick.getKnobPercentX() > 0.01 || stick.getKnobPercentX() < -0.01){
+            game.player.direction.x = stick.getKnobPercentX();
+        }
+
+        if(stick.getKnobPercentY() > 0.01 || stick.getKnobPercentY() < -0.01){
+            game.player.direction.y = stick.getKnobPercentY();
         }
     }
 }

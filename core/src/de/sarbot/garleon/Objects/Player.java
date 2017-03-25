@@ -36,7 +36,7 @@ public class Player implements Disposable {
     private TextureRegion[][] idleRegions;
 
 
-    public Player (){
+    public Player(){
 
         position = new Vector2(3500,-80); //what koord is this?
         direction = new Vector2(0, 0);
