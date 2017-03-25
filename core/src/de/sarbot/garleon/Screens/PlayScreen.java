@@ -10,18 +10,28 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import de.sarbot.garleon.GarleonGame;
+import de.sarbot.garleon.Objects.Creatures.Spider;
 import de.sarbot.garleon.Objects.Joystick;
+
+import java.awt.geom.RectangularShape;
 
 /**
  * Created by sarbot on 22.03.17.
@@ -52,9 +62,20 @@ public class PlayScreen implements Screen{
     private OrthographicCamera camera;
     private float blockSpeed;
 
+    private World world;
+    private Box2DDebugRenderer debugRenderer;
+    private CircleShape circle;
+    private CircleShape testCircle;
+    private PolygonShape testPoly;
+    private Array<Body> bodies;
+    private MapLayer collisionLayer;
+
+    private Spider spider;
+
 
     public PlayScreen(GarleonGame gam){
         game = gam;
+        Box2D.init();
         if(game.debug>0) System.out.println("create Play Screen");
 
     }
@@ -62,6 +83,22 @@ public class PlayScreen implements Screen{
 
     @Override
     public void show() {
+        world = new World(new Vector2(0,0), true);
+        debugRenderer = new Box2DDebugRenderer();
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(100, 300);
+        Body body = world.createBody(bodyDef);
+        CircleShape circle = new CircleShape();
+        circle.setRadius(6f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circle;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+        Fixture fixture = body.createFixture(fixtureDef);
+
+
         cam = new OrthographicCamera();
         cam.setToOrtho(false, game.width,game.height);
         cam.position.x = Gdx.graphics.getWidth()/2;
@@ -71,6 +108,7 @@ public class PlayScreen implements Screen{
         cam.update(); //calls the view? no..
         batch = new SpriteBatch();
         map = new TmxMapLoader().load("maps/base.tmx");
+        parseCollisionLayer();
         mapRenderer = new IsometricTiledMapRenderer(map);
 
         horseSprite = new Texture("creatures/horse.png");
@@ -78,6 +116,12 @@ public class PlayScreen implements Screen{
         horseAnimation = new Animation(0.1f, horseRegion);
         horseAnimation.setPlayMode(Animation.PlayMode.LOOP);
         timer = 0;
+
+
+        spider = new Spider(8,10,10,"Tekla");
+        System.out.println("spider created: " + spider.name);
+
+
 
         //interface stuff
         //TODO move everything into one interface actor some how
@@ -141,6 +185,7 @@ public class PlayScreen implements Screen{
         mapRenderer.getBatch().draw(horseRegion[1], 0f, 2*32f, 100, 100);
         game.player.render(mapRenderer.getBatch());
         //System.out.print(mapRenderer.getUnitScale());
+        spider.render(mapRenderer.getBatch());
         mapRenderer.getBatch().end();
 
         //render interface
@@ -149,6 +194,8 @@ public class PlayScreen implements Screen{
         batch.end();
 
         hudStage.draw();
+        debugRenderer.render(world, camera.combined);
+        world.step(1/60f, 6, 2);
 
     }
 
@@ -175,6 +222,7 @@ public class PlayScreen implements Screen{
     @Override
     public void dispose() {
         game.dispose();
+        circle.dispose();
 
     }
 
@@ -207,4 +255,22 @@ public class PlayScreen implements Screen{
             game.player.direction.y = stick.getKnobPercentY();
         }
     }
+
+    private void parseCollisionLayer(){
+        if(game.debug>0){
+            System.out.println("create Collision Bodies");
+        }
+        collisionLayer = map.getLayers().get("collisionObjects");
+        for(MapObject colObj : collisionLayer.getObjects()){
+
+            if(game.debug>0){
+                System.out.println("found Object with name: " + colObj.getName());
+            }
+
+
+        }
+
+        return;
+    }
+
 }

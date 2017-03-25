@@ -12,6 +12,7 @@ public class Joystick extends Touchpad {
 
 
     public Joystick(float deadzoneRadius, TouchpadStyle style) {
+
         super(deadzoneRadius, style);
     }
 
