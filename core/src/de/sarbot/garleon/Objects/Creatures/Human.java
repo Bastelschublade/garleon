@@ -5,11 +5,11 @@ import de.sarbot.garleon.Objects.Creature;
 /**
  * Created by sarbot on 25.03.17.
  */
-public class Animal extends Creature {
+public class Human extends Creature {
 
-    public Animal(){
+    public Human(){
         super();
-        super.group = "Tier";
+        super.group = "Mensch";
 
     }
 }

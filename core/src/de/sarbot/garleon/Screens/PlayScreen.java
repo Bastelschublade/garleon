@@ -28,7 +28,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import de.sarbot.garleon.GarleonGame;
+import de.sarbot.garleon.Objects.Creatures.Oga;
 import de.sarbot.garleon.Objects.Creatures.Spider;
+import de.sarbot.garleon.Objects.Creatures.Wolf;
 import de.sarbot.garleon.Objects.Joystick;
 
 import java.awt.geom.RectangularShape;
@@ -71,6 +73,8 @@ public class PlayScreen implements Screen{
     private MapLayer collisionLayer;
 
     private Spider spider;
+    private Oga oga;
+    private Wolf wolf;
 
 
     public PlayScreen(GarleonGame gam){
@@ -118,8 +122,9 @@ public class PlayScreen implements Screen{
         timer = 0;
 
 
-        spider = new Spider(8,10,10,"Tekla");
-        System.out.println("spider created: " + spider.name);
+        spider = new Spider(8,3500, -80,"Tekla");
+        wolf = new Wolf( 8, 3500, -300, "hugo");
+        oga = new Oga(8, 3200, -150, "tibbers");
 
 
 
@@ -185,7 +190,12 @@ public class PlayScreen implements Screen{
         mapRenderer.getBatch().draw(horseRegion[1], 0f, 2*32f, 100, 100);
         game.player.render(mapRenderer.getBatch());
         //System.out.print(mapRenderer.getUnitScale());
+        spider.update(delta);
+        wolf.update(delta);
+        oga.update(delta);
         spider.render(mapRenderer.getBatch());
+        wolf.render(mapRenderer.getBatch());
+        oga.render(mapRenderer.getBatch());
         mapRenderer.getBatch().end();
 
         //render interface
@@ -270,6 +280,10 @@ public class PlayScreen implements Screen{
 
         }
 
+        return;
+    }
+
+    private void parseMobLayer(){
         return;
     }
 
