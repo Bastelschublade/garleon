@@ -63,7 +63,6 @@ public class Creature {
 
     public void update(float delta){
         stateTime += delta;
-        System.out.println("stateTime: " + stateTime);
 
     }
 
@@ -71,7 +70,6 @@ public class Creature {
         int orientation = 0;
 
         Animation<TextureRegion> stateAnimation = idleAnimations.get(0);
-        System.out.println("size" + idleAnimations.get(0).getAnimationDuration());
         switch (state){
             case Dieing:
                 stateAnimation = dieAnimations.get(0);
@@ -112,7 +110,6 @@ public class Creature {
                 walkRegions[ori][f] = regions[ori][f+walkStart];
             }
             for (int g = 0; g < idleStop-idleStart; g++){
-                System.out.println(ori);
                 idleRegions[ori][g] = regions[ori][g+idleStart];
             }
             for (int h = 0; h< dieStop-dieStart; h++){

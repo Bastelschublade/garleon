@@ -38,7 +38,7 @@ public class Player implements Disposable {
 
     public Player(){
 
-        position = new Vector2(3500,-80); //what koord is this?
+        position = new Vector2(500,-80); //what koord is this?
         direction = new Vector2(0, 0);
         walkSpeed = 150;
         frameDuration = 10 / walkSpeed;

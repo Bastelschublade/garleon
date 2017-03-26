@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -32,6 +34,7 @@ import de.sarbot.garleon.Objects.Creatures.Oga;
 import de.sarbot.garleon.Objects.Creatures.Spider;
 import de.sarbot.garleon.Objects.Creatures.Wolf;
 import de.sarbot.garleon.Objects.Joystick;
+import de.sarbot.garleon.Tools;
 
 import java.awt.geom.RectangularShape;
 
@@ -89,9 +92,10 @@ public class PlayScreen implements Screen{
     public void show() {
         world = new World(new Vector2(0,0), true);
         debugRenderer = new Box2DDebugRenderer();
+        bodies = new Array<Body>();
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(100, 300);
+        bodyDef.position.set(10, 10);
         Body body = world.createBody(bodyDef);
         CircleShape circle = new CircleShape();
         circle.setRadius(6f);
@@ -204,7 +208,7 @@ public class PlayScreen implements Screen{
         batch.end();
 
         hudStage.draw();
-        debugRenderer.render(world, camera.combined);
+        debugRenderer.render(world, cam.combined); //cam for map camera for hud
         world.step(1/60f, 6, 2);
 
     }
@@ -280,10 +284,75 @@ public class PlayScreen implements Screen{
 
         }
 
+
+
+
+
+        MapObjects collisionObjects = map.getLayers().get("collisionObjects").getObjects();
+        //TODO: if none dont run the loop
+        for (MapObject obj : collisionObjects){
+            Shape shape;
+
+            if (obj instanceof PolygonMapObject){
+                System.out.println("found polygon: "+ obj.getName());
+                shape = getPolygon((PolygonMapObject) obj);
+            }
+            /*
+            else if(obj instanceof TextureMapObject){//images
+                return;
+            }
+            else if (obj instanceof RectangleMapObject){
+                System.out.println("found rectangle: "+ obj.getName());
+            }
+            else if (obj instanceof CircleMapObject){
+                System.out.println("found circle: "+obj.getName());
+            }
+            else if (obj instanceof PolylineMapObject){
+                System.out.println("found polyline: "+obj.getName());
+            }*/
+
+            else{
+                continue;
+            }
+
+
+            BodyDef bd = new BodyDef();
+            bd.type = BodyDef.BodyType.StaticBody;
+            Body body = world.createBody(bd);
+            body.createFixture(shape, 1);
+
+            bodies.add(body);
+
+            shape.dispose();
+        }
+
         return;
     }
 
+    private static PolygonShape getPolygon(PolygonMapObject polygonObject) {
+        PolygonShape polygon = new PolygonShape();
+        //float[] vertices = polygonObject.getPolygon().getTransformedVertices();
+        float[] vertices = polygonObject.getPolygon().getVertices();
+
+        float[] worldVertices = new float[vertices.length];
+
+        for (int i = 0; i < vertices.length ; i+=2) { //TODO: make sure this does not break out.. its always even number?
+
+            System.out.println(vertices[i]);
+            //worldVertices[i] = vertices[i] / 1; //ppt
+            Vector2 worldPoint = Tools.tiled2world(vertices[i], vertices[i + 1]);
+            worldVertices[i] = worldPoint.x;
+            worldVertices[i+1] = worldPoint.y;
+
+        }
+
+        polygon.set(worldVertices);
+        return polygon;
+
+    }
+
     private void parseMobLayer(){
+
         return;
     }
 
