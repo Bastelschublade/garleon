@@ -330,10 +330,11 @@ public class PlayScreen implements Screen{
     }
 
     private static PolygonShape getPolygon(PolygonMapObject polygonObject) {
+
         PolygonShape polygon = new PolygonShape();
         //float[] vertices = polygonObject.getPolygon().getTransformedVertices();
-        float[] vertices = polygonObject.getPolygon().getVertices();
-
+        //Vector2 offset = new Vector2(polygonObject.getProperties().get("x").toString(), polygonObject.getProperties().get("y").toString());
+        float[] vertices = polygonObject.getPolygon().getTransformedVertices();
         float[] worldVertices = new float[vertices.length];
 
         for (int i = 0; i < vertices.length ; i+=2) { //TODO: make sure this does not break out.. its always even number?
