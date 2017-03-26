@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ public class Creature {
     public String group;
     public Texture texture;
     public float frameDuration;
+    public float radius;
+    public Body body;
+    public BodyDef bodyDef;
 
 
     private TextureRegion[][] regions;
@@ -44,7 +48,7 @@ public class Creature {
 
 
     public Creature(){
-        position = new Vector2(0,0);
+        position = new Vector2(3500,0);
         name = "unnamed Creature";
         size = new Vector2(10,10);
         scale = 1;
@@ -53,6 +57,7 @@ public class Creature {
         alive = true;
         velocity = new Vector2(0,0);
         group = "none";
+
 
         //copy from player class
         frameDuration = (float) 0.2;
@@ -127,7 +132,6 @@ public class Creature {
             dieAnimations.add(animDie);
 
         }
-
-
     }
+
 }

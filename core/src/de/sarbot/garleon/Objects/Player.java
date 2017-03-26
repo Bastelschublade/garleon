@@ -30,6 +30,7 @@ public class Player implements Disposable {
     private int orientation; // 0 is left clockwise up to 7
 
     private Texture texture;
+    private Texture headTex;
     public Vector2 textureOffset; //offset to display it correct in hitbox
     private TextureRegion[][] regions;
     private TextureRegion[][] regionsWalk;
@@ -49,8 +50,9 @@ public class Player implements Disposable {
 
         textureOffset = new Vector2(-50, -40);
 
-        texture = new Texture("creatures/troll.png");
-        regions = TextureRegion.split(texture, 256,256);
+        texture = new Texture("characters/hero/example.png");
+        headTex = new Texture("characters/hero/malehead1.png");
+        regions = TextureRegion.split(texture, 128,128);
 
 
         /*
@@ -130,7 +132,8 @@ public class Player implements Disposable {
 
     @Override
     public void dispose() {
-
+        texture.dispose();
+        headTex.dispose();
     }
 
 

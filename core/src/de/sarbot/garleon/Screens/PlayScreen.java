@@ -31,9 +31,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import de.sarbot.garleon.GarleonGame;
-import de.sarbot.garleon.Objects.Creatures.Oga;
-import de.sarbot.garleon.Objects.Creatures.Spider;
-import de.sarbot.garleon.Objects.Creatures.Wolf;
+import de.sarbot.garleon.Objects.Creatures.*;
 import de.sarbot.garleon.Objects.Joystick;
 import de.sarbot.garleon.Tools;
 
@@ -77,6 +75,8 @@ public class PlayScreen implements Screen{
     private Spider spider;
     private Oga oga;
     private Wolf wolf;
+    private Troll troll;
+    private Goblin goblin;
 
 
     public PlayScreen(GarleonGame gam){
@@ -121,6 +121,23 @@ public class PlayScreen implements Screen{
         spider = new Spider(8,3500, -80,"Tekla");
         wolf = new Wolf( 8, 3500, -300, "hugo");
         oga = new Oga(8, 3200, -150, "tibbers");
+        troll = new Troll( 9, 3100, -300, "Flick");
+        goblin = new Goblin(10, 2900, -100, "Ringo");
+
+        //add bodies of animals
+        BodyDef spiderbodyDef = new BodyDef();
+        spiderbodyDef.type = BodyDef.BodyType.DynamicBody;
+        spiderbodyDef.position.set(spider.position.x+64, spider.position.y+64);
+        Body body = world.createBody(spiderbodyDef);
+        CircleShape spiderCircle = new CircleShape();
+        spiderCircle.setRadius(12f);
+        FixtureDef spiderfixtureDef = new FixtureDef();
+        spiderfixtureDef.shape = spiderCircle;
+        spiderfixtureDef.density = 0.5f;
+        spiderfixtureDef.friction = 0.4f;
+        spiderfixtureDef.restitution = 0.6f; // Make it bounce a little bit
+        Fixture spiderfixture = body.createFixture(spiderfixtureDef);
+
 
 
 
@@ -134,8 +151,8 @@ public class PlayScreen implements Screen{
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 10f*aspectRatio, 10f);
         skin = new Skin();
-        skin.add("touchBackground", new Texture("test/pad.png"));
-        skin.add("touchKnob", new Texture("test/knob.png"));
+        skin.add("touchBackground", new Texture("ui/pad.png"));
+        skin.add("touchKnob", new Texture("ui/knob.png"));
         padStyle = new Touchpad.TouchpadStyle();
         touchBackground = skin.getDrawable("touchBackground");
         touchKnob = skin.getDrawable("touchKnob");
@@ -186,9 +203,13 @@ public class PlayScreen implements Screen{
         spider.update(delta);
         wolf.update(delta);
         oga.update(delta);
+        goblin.update(delta);
+        troll.update(delta);
         spider.render(mapRenderer.getBatch());
         wolf.render(mapRenderer.getBatch());
         oga.render(mapRenderer.getBatch());
+        troll.render(mapRenderer.getBatch());
+        goblin.render(mapRenderer.getBatch());
         mapRenderer.getBatch().end();
 
         //render interface
