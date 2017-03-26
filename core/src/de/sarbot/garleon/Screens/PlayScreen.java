@@ -19,6 +19,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polyline;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -294,10 +295,12 @@ public class PlayScreen implements Screen{
             }
             else if (obj instanceof CircleMapObject){
                 System.out.println("found circle: "+obj.getName());
-            }
+            }*/
+
             else if (obj instanceof PolylineMapObject){
                 System.out.println("found polyline: "+obj.getName());
-            }*/
+                shape = getPolyChain((PolylineMapObject) obj);
+            }
 
             else{
                 continue;
@@ -335,6 +338,32 @@ public class PlayScreen implements Screen{
 
         polygon.set(worldVertices);
         return polygon;
+
+    }
+
+    private static ChainShape getPolyChain(PolylineMapObject polylineObject) {
+
+
+        //float[] vertices = polygonObject.getPolygon().getTransformedVertices();
+        //Vector2 offset = new Vector2(polygonObject.getProperties().get("x").toString(), polygonObject.getProperties().get("y").toString());
+        float[] vertices = polylineObject.getPolyline().getTransformedVertices();
+        float[] worldVertices = new float[vertices.length];
+        float yOff = 16;
+
+        for (int i = 0; i < vertices.length ; i+=2) { //TODO: make sure this does not break out.. its always even number?
+
+            System.out.println(vertices[i]);
+            //worldVertices[i] = vertices[i] / 1; //ppt
+            Vector2 worldPoint = Tools.tiled2world(vertices[i], vertices[i + 1]);
+            worldVertices[i] = worldPoint.x;
+            worldVertices[i+1] = worldPoint.y + yOff;
+
+        }
+
+        //chain.set(worldVertices);
+        ChainShape chain = new ChainShape();
+        chain.createChain(worldVertices);
+        return chain;
 
     }
 
