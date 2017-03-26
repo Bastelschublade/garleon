@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.utils.Disposable;
 import de.sarbot.garleon.Tools;
 
@@ -22,12 +23,14 @@ public class Player implements Disposable {
     enum State {Idle, Running, Dieing, Hitting};
     public State state;
 
-    private float walkSpeed;
+
+    public float walkSpeed;
     private float frameDuration;
     private float stateTime;
     private int orientation; // 0 is left clockwise up to 7
 
     private Texture texture;
+    public Vector2 textureOffset; //offset to display it correct in hitbox
     private TextureRegion[][] regions;
     private TextureRegion[][] regionsWalk;
     private ArrayList<Animation> walkAnimations;
@@ -38,11 +41,13 @@ public class Player implements Disposable {
 
     public Player(){
 
-        position = new Vector2(500,-80); //what koord is this?
+        position = new Vector2(3500,-80); //what koord is this?
         direction = new Vector2(0, 0);
         walkSpeed = 150;
         frameDuration = 10 / walkSpeed;
         state = State.Idle;
+
+        textureOffset = new Vector2(-50, -40);
 
         texture = new Texture("creatures/troll.png");
         regions = TextureRegion.split(texture, 256,256);
@@ -84,7 +89,7 @@ public class Player implements Disposable {
 
 
 
-    public void update(float delta) {
+    public void update(float delta, Body pBody) {
         stateTime += delta;
 
         state = State.Idle;
@@ -93,8 +98,13 @@ public class Player implements Disposable {
             orientation = Tools.vector2orientation(direction);
             state = State.Running;
         }
+        /*
         position.x += direction.x * walkSpeed * delta / norm;
         position.y += direction.y * walkSpeed * delta / norm;
+        */
+
+        position.x = pBody.getPosition().x + textureOffset.x;
+        position.y = pBody.getPosition().y + textureOffset.y;
 
 
     }

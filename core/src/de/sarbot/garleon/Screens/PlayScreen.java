@@ -48,9 +48,6 @@ public class PlayScreen implements Screen{
     private OrthographicCamera cam;
     private StretchViewport view;
     private SpriteBatch batch;
-    private Texture horseSprite;
-    private TextureRegion[] horseRegion;
-    private Animation<TextureRegion> horseAnimation;
     private float timer;
 
     private Stage hudStage;
@@ -69,9 +66,10 @@ public class PlayScreen implements Screen{
 
     private World world;
     private Box2DDebugRenderer debugRenderer;
-    private CircleShape circle;
+    private CircleShape playerCircle;
     private CircleShape testCircle;
     private PolygonShape testPoly;
+    private Body playerBody;
     private Array<Body> bodies;
     private MapLayer collisionLayer;
 
@@ -83,10 +81,8 @@ public class PlayScreen implements Screen{
     public PlayScreen(GarleonGame gam){
         game = gam;
         Box2D.init();
-        if(game.debug>0) System.out.println("create Play Screen");
 
     }
-
 
     @Override
     public void show() {
@@ -95,16 +91,16 @@ public class PlayScreen implements Screen{
         bodies = new Array<Body>();
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(10, 10);
-        Body body = world.createBody(bodyDef);
-        CircleShape circle = new CircleShape();
-        circle.setRadius(6f);
+        bodyDef.position.set(game.player.position.x, game.player.position.y);
+        playerBody = world.createBody(bodyDef);
+        CircleShape playerCircle = new CircleShape();
+        playerCircle.setRadius(12f);
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circle;
+        fixtureDef.shape = playerCircle;
         fixtureDef.density = 0.5f;
         fixtureDef.friction = 0.4f;
         fixtureDef.restitution = 0.6f; // Make it bounce a little bit
-        Fixture fixture = body.createFixture(fixtureDef);
+        Fixture fixture = playerBody.createFixture(fixtureDef);
 
 
         cam = new OrthographicCamera();
@@ -118,11 +114,6 @@ public class PlayScreen implements Screen{
         map = new TmxMapLoader().load("maps/base.tmx");
         parseCollisionLayer();
         mapRenderer = new IsometricTiledMapRenderer(map);
-
-        horseSprite = new Texture("creatures/horse.png");
-        horseRegion = TextureRegion.split(horseSprite, 128, 128)[0];
-        horseAnimation = new Animation(0.1f, horseRegion);
-        horseAnimation.setPlayMode(Animation.PlayMode.LOOP);
         timer = 0;
 
 
@@ -174,7 +165,7 @@ public class PlayScreen implements Screen{
         hudStage.act();
         handleInput(delta, stick);
 
-        game.player.update(delta);
+        game.player.update(delta, playerBody);
 
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -189,9 +180,6 @@ public class PlayScreen implements Screen{
 
         //render objects into map
         mapRenderer.getBatch().begin();
-        mapRenderer.getBatch().draw(horseRegion[3], 900, 300);
-        mapRenderer.getBatch().draw(horseAnimation.getKeyFrame(timer), 1000, 250);
-        mapRenderer.getBatch().draw(horseRegion[1], 0f, 2*32f, 100, 100);
         game.player.render(mapRenderer.getBatch());
         //System.out.print(mapRenderer.getUnitScale());
         spider.update(delta);
@@ -236,18 +224,19 @@ public class PlayScreen implements Screen{
     @Override
     public void dispose() {
         game.dispose();
-        circle.dispose();
+        playerCircle.dispose();
+
 
     }
 
 
     public void handleInput(float delta, Joystick stick){
-        //Arrow Keys
+        //reset to defaults
         game.player.direction.x = 0;
         game.player.direction.y = 0;
 
 
-
+        //Arrow Keys
         if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
             game.player.direction.x += 1;
         }
@@ -261,6 +250,7 @@ public class PlayScreen implements Screen{
             game.player.direction.y -= 1;
         }
 
+        //joystick
         if(stick.getKnobPercentX() > 0.01 || stick.getKnobPercentX() < -0.01){
             game.player.direction.x = stick.getKnobPercentX();
         }
@@ -268,31 +258,29 @@ public class PlayScreen implements Screen{
         if(stick.getKnobPercentY() > 0.01 || stick.getKnobPercentY() < -0.01){
             game.player.direction.y = stick.getKnobPercentY();
         }
+
+        playerBody.setLinearVelocity(0,0);
+        float norm = Tools.isoNorm(game.player.direction.x, game.player.direction.y);
+        float vx = game.player.direction.x * game.player.walkSpeed / norm;
+        float vy = game.player.direction.y * game.player.walkSpeed / norm;
+
+        playerBody.setLinearVelocity(vx, vy);
     }
 
     private void parseCollisionLayer(){
-        if(game.debug>0){
-            System.out.println("create Collision Bodies");
-        }
+        if(game.debug>0){System.out.println("create Collision Bodies");}
         collisionLayer = map.getLayers().get("collisionObjects");
-        for(MapObject colObj : collisionLayer.getObjects()){
 
-            if(game.debug>0){
+        //print names of layers (debug)
+        if(game.debug>0){
+            for(MapObject colObj : collisionLayer.getObjects()){
                 System.out.println("found Object with name: " + colObj.getName());
             }
-
-
         }
-
-
-
-
-
         MapObjects collisionObjects = map.getLayers().get("collisionObjects").getObjects();
         //TODO: if none dont run the loop
         for (MapObject obj : collisionObjects){
             Shape shape;
-
             if (obj instanceof PolygonMapObject){
                 System.out.println("found polygon: "+ obj.getName());
                 shape = getPolygon((PolygonMapObject) obj);
@@ -320,12 +308,9 @@ public class PlayScreen implements Screen{
             bd.type = BodyDef.BodyType.StaticBody;
             Body body = world.createBody(bd);
             body.createFixture(shape, 1);
-
             bodies.add(body);
-
             shape.dispose();
         }
-
         return;
     }
 
@@ -336,6 +321,7 @@ public class PlayScreen implements Screen{
         //Vector2 offset = new Vector2(polygonObject.getProperties().get("x").toString(), polygonObject.getProperties().get("y").toString());
         float[] vertices = polygonObject.getPolygon().getTransformedVertices();
         float[] worldVertices = new float[vertices.length];
+        float yOff = 16;
 
         for (int i = 0; i < vertices.length ; i+=2) { //TODO: make sure this does not break out.. its always even number?
 
@@ -343,7 +329,7 @@ public class PlayScreen implements Screen{
             //worldVertices[i] = vertices[i] / 1; //ppt
             Vector2 worldPoint = Tools.tiled2world(vertices[i], vertices[i + 1]);
             worldVertices[i] = worldPoint.x;
-            worldVertices[i+1] = worldPoint.y;
+            worldVertices[i+1] = worldPoint.y + yOff;
 
         }
 
