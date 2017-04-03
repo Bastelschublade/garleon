@@ -2,6 +2,7 @@ package de.sarbot.garleon.Objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import de.sarbot.garleon.GarleonGame;
 import de.sarbot.garleon.Tools;
 
@@ -21,6 +23,7 @@ public class Interface implements Disposable {
 
     private GarleonGame game;
     public Stage stage;
+    private OrthographicCamera camera;
     private Skin skin;
     private TextureAtlas atlas;
     private Touchpad pad;
@@ -29,7 +32,10 @@ public class Interface implements Disposable {
     private Texture button;
     private Table actionTable;
     private Button.ButtonStyle actionBS;
-    private Button actionButton;
+    private Button actionButton1;
+    private Button actionButton2;
+    private Button actionButton3;
+    private Button actionButton4;
 
     public class CustomListener extends ClickListener{
         Player player;
@@ -49,7 +55,10 @@ public class Interface implements Disposable {
     public Interface (GarleonGame game){
 
         this.game = game;
-        stage = new Stage();
+        float aspectRatio = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
+        camera = new OrthographicCamera();
+        camera.setToOrtho(false, 10f*aspectRatio, 10f);
+        stage = new Stage(new FillViewport(game.width, game.height, camera));
         atlas = new TextureAtlas("ui/rpg1.pack");
         skin = new Skin(atlas);
         //buttons
@@ -68,17 +77,29 @@ public class Interface implements Disposable {
         stick.setBounds(15, 15, 150, 150);
 
         actionTable = new Table(skin);
-        actionTable.setBounds(Gdx.graphics.getWidth()-150,200, 100, 100);
+        actionTable.setBounds(game.width-100,200, 50, 50);
         actionBS = new Button.ButtonStyle();
         actionBS.up = skin.getDrawable("button");
         actionBS.down = skin.getDrawable("button");
         actionBS.pressedOffsetX = 2;
         actionBS.pressedOffsetY = -2;
-        actionButton = new Button(actionBS);
-        actionButton.addListener(new CustomListener(game.player));
+        actionButton1 = new Button(actionBS);
+        actionButton2 = new Button(actionBS);
+        actionButton3 = new Button(actionBS);
+        actionButton4 = new Button(actionBS);
+        actionButton1.addListener(new CustomListener(game.player));
+        actionButton2.addListener(new CustomListener(game.player));
+        actionButton3.addListener(new CustomListener(game.player));
+        actionButton4.addListener(new CustomListener(game.player));
         //actionButton.setBackground(skin.getDrawable("button"));
         actionTable.row();
-        actionTable.add(actionButton);
+        actionTable.add(actionButton1);
+        actionTable.row();
+        actionTable.add(actionButton2);
+        actionTable.row();
+        actionTable.add(actionButton3);
+        actionTable.row();
+        actionTable.add(actionButton4);
 
 
         Gdx.input.setInputProcessor(stage);

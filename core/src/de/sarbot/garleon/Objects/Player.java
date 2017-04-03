@@ -129,11 +129,12 @@ public class Player implements Disposable {
                 orientation = Tools.vector2orientation(direction);
                 state = State.Running;
             }
+            position.x = body.getPosition().x + textureOffset.x;
+            position.y = body.getPosition().y + textureOffset.y;
         }
         //else orientation = Tools.vector2orientation(direction);
 
-        position.x = body.getPosition().x + textureOffset.x;
-        position.y = body.getPosition().y + textureOffset.y;
+
 
     }
 
