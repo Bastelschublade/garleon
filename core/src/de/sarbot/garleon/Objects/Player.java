@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
 import de.sarbot.garleon.Tools;
 
@@ -22,22 +22,25 @@ public class Player implements Disposable {
     public Vector2 direction;
     enum State {Idle, Running, Dieing, Hitting};
     public State state;
+    public Body body;
+    public float attackSpeed;
 
 
     public float walkSpeed;
     private float frameDuration;
-    private float stateTime;
+    public float stateTime;
     private int orientation; // 0 is left clockwise up to 7
 
     private Texture texture;
     private Texture headTex;
     public Vector2 textureOffset; //offset to display it correct in hitbox
     private TextureRegion[][] regions;
-    private TextureRegion[][] regionsWalk;
     private ArrayList<Animation> walkAnimations;
     private ArrayList<Animation> idleAnimations;
+    private ArrayList<Animation> hitAnimations;
     private TextureRegion[][] walkRegions;
     private TextureRegion[][] idleRegions;
+    private TextureRegion[][] hitRegions;
 
 
     public Player(){
@@ -47,6 +50,23 @@ public class Player implements Disposable {
         walkSpeed = 150;
         frameDuration = 10 / walkSpeed;
         state = State.Idle;
+        attackSpeed = 1; //factor for animation speed and state toggle not cooldown
+
+        //TODO sinnvoll erstellen body/player eigenschaften noch trennbar?
+        /*
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(position.x, position.y);
+        //body = world.createBody(bodyDef);
+        CircleShape playerCircle = new CircleShape();
+        playerCircle.setRadius(12f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = playerCircle;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 0.4f;
+        fixtureDef.restitution = 0.6f; // Make it bounce a little bit
+        Fixture fixture = body.createFixture(fixtureDef);
+        */
 
         textureOffset = new Vector2(-50, -40);
 
@@ -69,13 +89,19 @@ public class Player implements Disposable {
         idleRegions = new TextureRegion[8][4];
         idleAnimations = new ArrayList<Animation>();
 
+        hitRegions = new TextureRegion[8][4];
+        hitAnimations = new ArrayList<Animation>();
+
         //create animations for all orientations
         for (int ori = 0; ori < regions.length; ori++ ){
-            for (int f = 0; f < 8; f++){
-                walkRegions[ori][f] = regions[ori][f+4];
+            for (int f = 0; f < 4; f++){
+                idleRegions[ori][f] = regions[ori][f];
             }
-            for (int g = 0; g < 4; g++){
-                idleRegions[ori][g] = regions[ori][g];
+            for (int g = 0; g < 8; g++){
+                walkRegions[ori][g] = regions[ori][g+4];
+            }
+            for (int h = 0; h < 4; h++){
+                hitRegions[ori][h] = regions[ori][h+12];
             }
             Animation<TextureRegion> anim = new Animation<TextureRegion>(frameDuration, walkRegions[ori]);
             anim.setPlayMode(Animation.PlayMode.LOOP);
@@ -83,6 +109,8 @@ public class Player implements Disposable {
             Animation<TextureRegion> animIdle = new Animation<TextureRegion>(frameDuration, idleRegions[ori]);
             animIdle.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
             idleAnimations.add(animIdle);
+            Animation<TextureRegion> animHit = new Animation<TextureRegion>((float) (frameDuration /attackSpeed), hitRegions[ori]);
+            hitAnimations.add(animHit);
 
         }
 
@@ -93,21 +121,19 @@ public class Player implements Disposable {
 
     public void update(float delta, Body pBody) {
         stateTime += delta;
-
-        state = State.Idle;
-        float norm = Tools.isoNorm(direction.x, direction.y);
-        if(norm > 0.1){
-            orientation = Tools.vector2orientation(direction);
-            state = State.Running;
+        //update states
+        if(state!=State.Hitting || stateTime > 0.5 / attackSpeed) {
+            state = State.Idle;
+            float norm = Tools.isoNorm(direction.x, direction.y);
+            if (norm > 0.1) {
+                orientation = Tools.vector2orientation(direction);
+                state = State.Running;
+            }
         }
-        /*
-        position.x += direction.x * walkSpeed * delta / norm;
-        position.y += direction.y * walkSpeed * delta / norm;
-        */
+        //else orientation = Tools.vector2orientation(direction);
 
-        position.x = pBody.getPosition().x + textureOffset.x;
-        position.y = pBody.getPosition().y + textureOffset.y;
-
+        position.x = body.getPosition().x + textureOffset.x;
+        position.y = body.getPosition().y + textureOffset.y;
 
     }
 
@@ -118,7 +144,7 @@ public class Player implements Disposable {
                 stateAnimation = idleAnimations.get(orientation);
                 break;
             case Hitting:
-                stateAnimation = idleAnimations.get(orientation);
+                stateAnimation = hitAnimations.get(orientation);
                 break;
             case Idle:
                 stateAnimation = idleAnimations.get(orientation);

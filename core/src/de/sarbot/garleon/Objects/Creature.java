@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import de.sarbot.garleon.Tools;
 
 import java.util.ArrayList;
 
@@ -41,6 +42,7 @@ public class Creature {
     private TextureRegion[][] idleRegions;
     private TextureRegion[][] dieRegions;
     private float stateTime;
+    private float speednorm;
 
     public enum State {Idle, Running, Dieing, Hitting};
     public Creature.State state;
@@ -57,6 +59,7 @@ public class Creature {
         alive = true;
         velocity = new Vector2(0,0);
         group = "none";
+        radius = 12;
 
 
         //copy from player class
@@ -68,6 +71,9 @@ public class Creature {
 
     public void update(float delta){
         stateTime += delta;
+        speednorm = Tools.isoNorm(velocity.x, velocity.y);
+        position.x += velocity.x*delta/speednorm;
+        position.y += velocity.y*delta/speednorm;
 
     }
 
