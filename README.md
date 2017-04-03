@@ -2,7 +2,7 @@
 Ein 2D Adventure RPG. Mit Ausblick auf Multiplayer OpenWorld.
 
 # Spielen
-http://sarbot.de/games/garleon
+http://sarbot.de/games/garleon (Browserversion eingestellt)
 
 # Mitmachen
 Jeder ist eingeladen mitzumachen. Ideen, Konzepte und Unfug können im Wiki diskutiert werden:

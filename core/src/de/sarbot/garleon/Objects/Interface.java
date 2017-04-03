@@ -2,6 +2,7 @@ package de.sarbot.garleon.Objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -37,6 +38,9 @@ public class Interface implements Disposable {
     private Button actionButton3;
     private Button actionButton4;
 
+
+    private Sound melee;
+
     public class CustomListener extends ClickListener{
         Player player;
         public CustomListener(Player player){
@@ -47,6 +51,7 @@ public class Interface implements Disposable {
         public void clicked(InputEvent event, float x, float y){
             player.state = Player.State.Hitting;
             player.stateTime = 0;
+            player.meleeSnd.play();
         }
 
     }
@@ -55,6 +60,7 @@ public class Interface implements Disposable {
     public Interface (GarleonGame game){
 
         this.game = game;
+
         float aspectRatio = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 10f*aspectRatio, 10f);
@@ -145,7 +151,7 @@ public class Interface implements Disposable {
         float vx = game.player.direction.x * game.player.walkSpeed / norm;
         float vy = game.player.direction.y * game.player.walkSpeed / norm;
 
-        game.player.body.setLinearVelocity(vx, vy);
+        if(game.player.state != Player.State.Hitting) game.player.body.setLinearVelocity(vx, vy);
     }
 
     /*

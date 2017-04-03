@@ -3,6 +3,8 @@ package de.sarbot.garleon.Screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -82,6 +84,8 @@ public class PlayScreen implements Screen{
     private Troll troll;
     private Goblin goblin;
 
+    private Music music;
+
 
 
     public PlayScreen(GarleonGame gam){
@@ -94,6 +98,10 @@ public class PlayScreen implements Screen{
     public void show() {
         world = new World(new Vector2(0,0), true);
         debugRenderer = new Box2DDebugRenderer();
+        music = Gdx.audio.newMusic(Gdx.files.internal("music/base1.ogg"));
+        music.setLooping(true);
+        music.setVolume(0.3f);
+        music.play();
 
 
         bodies = new Array<Body>();

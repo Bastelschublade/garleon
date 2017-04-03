@@ -1,5 +1,7 @@
 package de.sarbot.garleon.Objects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -42,6 +44,8 @@ public class Player implements Disposable {
     private TextureRegion[][] idleRegions;
     private TextureRegion[][] hitRegions;
 
+    public Sound meleeSnd;
+
 
     public Player(){
 
@@ -51,6 +55,8 @@ public class Player implements Disposable {
         frameDuration = 10 / walkSpeed;
         state = State.Idle;
         attackSpeed = 1; //factor for animation speed and state toggle not cooldown
+
+        meleeSnd = Gdx.audio.newSound(Gdx.files.internal("sounds/melee.wav"));
 
         //TODO sinnvoll erstellen body/player eigenschaften noch trennbar?
         /*
@@ -122,16 +128,16 @@ public class Player implements Disposable {
     public void update(float delta, Body pBody) {
         stateTime += delta;
         //update states
-        if(state!=State.Hitting || stateTime > 0.5 / attackSpeed) {
+        if(state!=State.Hitting || stateTime > 0.4 / attackSpeed) {
             state = State.Idle;
             float norm = Tools.isoNorm(direction.x, direction.y);
             if (norm > 0.1) {
                 orientation = Tools.vector2orientation(direction);
                 state = State.Running;
             }
-            position.x = body.getPosition().x + textureOffset.x;
-            position.y = body.getPosition().y + textureOffset.y;
         }
+        position.x = body.getPosition().x + textureOffset.x;
+        position.y = body.getPosition().y + textureOffset.y;
         //else orientation = Tools.vector2orientation(direction);
 
 
