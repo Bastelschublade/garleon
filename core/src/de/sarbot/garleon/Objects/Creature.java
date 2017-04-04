@@ -41,6 +41,7 @@ public class Creature implements Disposable{
     public Vector2 hpBarSize;
     public float hpBarOffset;
     public float hpRel;
+    private float textureOffset;
 
 
     private TextureRegion[][] regions;
@@ -63,6 +64,7 @@ public class Creature implements Disposable{
 
     public Creature(){
         position = new Vector2(3500,0);
+        textureOffset = 20; //the feets of the creature
         name = "unnamed Creature";
         size = new Vector2(128,128);
         scale = 1;
@@ -74,7 +76,7 @@ public class Creature implements Disposable{
         group = "none";
         radius = 12;
         hpBarSize = new Vector2(30,4);
-        hpBarOffset = 100;
+        hpBarOffset = 50;
         atlas = new TextureAtlas("ui/interface.pack");
         skin = new Skin(atlas);
 
@@ -113,7 +115,7 @@ public class Creature implements Disposable{
                 stateAnimation = walkAnimations.get(orientation);
                 break;
         }
-        batch.draw(stateAnimation.getKeyFrame(stateTime), position.x, position.y, 150, 150);
+        batch.draw(stateAnimation.getKeyFrame(stateTime), position.x-size.x/2, position.y-size.y/2 + textureOffset, size.x, size.y);
         drawBar(batch);
         //batch.draw(texture, 0,-10);
     }
@@ -160,7 +162,7 @@ public class Creature implements Disposable{
     }
 
     public void drawBar(Batch batch){
-        float posX = position.x + (size.x - hpBarSize.x)/2;
+        float posX = position.x -hpBarSize.x/2;
         skin.getDrawable("hp_back").draw(batch, posX, position.y + hpBarOffset,
                 hpBarSize.x, hpBarSize.y);
 

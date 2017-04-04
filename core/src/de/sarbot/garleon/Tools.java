@@ -41,4 +41,9 @@ public class Tools {
         return real;
 
     }
+
+    public static void message(String msg, int tag){
+        //more important messages have higher tag, 5 is important 10 is like the world is going down NOW!
+        System.out.println("Message Level " + tag + ": " + msg);
+    }
 }

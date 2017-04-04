@@ -10,6 +10,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import de.sarbot.garleon.Tools;
 
@@ -23,11 +24,14 @@ public class Player implements Disposable {
 
     public Vector2 position; //TODO: world in iso koord or real koords?
     public Vector2 direction;
+    public float radius;
     enum State {Idle, Running, Dieing, Hitting};
     public State state;
     public Body body;
     public float attackSpeed;
     public float angle;
+    public float angleDelta;
+    public float range;
 
 
     public float walkSpeed;
@@ -54,12 +58,16 @@ public class Player implements Disposable {
         position = new Vector2(3500,-80); //what koord is this?
         direction = new Vector2(0, 0);
         walkSpeed = 150;
+        radius = 12;
         frameDuration = 10 / walkSpeed;
         state = State.Idle;
         attackSpeed = 1; //factor for animation speed and state toggle not cooldown
+        range = 20; //between hitboxes
 
         meleeSnd = Gdx.audio.newSound(Gdx.files.internal("sounds/melee.wav"));
         angle = 0;
+        angleDelta = 10;
+
 
         //TODO sinnvoll erstellen body/player eigenschaften noch trennbar?
         /*
@@ -77,7 +85,7 @@ public class Player implements Disposable {
         Fixture fixture = body.createFixture(fixtureDef);
         */
 
-        textureOffset = new Vector2(-50, -40);
+        textureOffset = new Vector2(-64, -64+25);
 
         texture = new Texture("characters/hero/example.png");
         headTex = new Texture("characters/hero/malehead1.png");
@@ -140,8 +148,8 @@ public class Player implements Disposable {
                 state = State.Running;
             }
         }
-        position.x = body.getPosition().x + textureOffset.x;
-        position.y = body.getPosition().y + textureOffset.y;
+        position.x = body.getPosition().x;
+        position.y = body.getPosition().y;
         //else orientation = Tools.vector2orientation(direction);
 
 
@@ -164,13 +172,28 @@ public class Player implements Disposable {
                 stateAnimation = walkAnimations.get(orientation);
                 break;
         }
-        batch.draw(stateAnimation.getKeyFrame(stateTime), position.x, position.y, 100, 100);
+        batch.draw(stateAnimation.getKeyFrame(stateTime), position.x + textureOffset.x, position.y + textureOffset.y, 128, 128);
     }
 
-    public Vector2 melee(){
+    public Vector2 melee(Array<Creature> creatures){
         Vector2 target = new Vector2(position.x, position.y);
         target.x += MathUtils.cosDeg(angle);
         target.y += MathUtils.sinDeg(angle);
+        //option1 calc array between player and target and if angle matches angle and distance matches range deal dmg
+
+        for(Creature crea : creatures){
+            //check distance and angle
+            Vector2 delta = crea.position.cpy();
+            delta.sub(position); //does not effekt crea.position ;)
+            if(delta.len() < range + radius + crea.radius){
+                float dmg = 0.1f * crea.currentHealth;
+                crea.currentHealth -= dmg;
+                Tools.message( "Dmg: " + dmg, 0);
+
+            }
+        }
+
+        //option2 check distance from attac target (angle->range) this will result in an circle impact infront of the player
         System.out.println(angle);
         return target;
 

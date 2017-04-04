@@ -115,7 +115,7 @@ public class PlayScreen implements Screen{
         bodyDef.position.set(game.player.position.x, game.player.position.y);
         game.player.body = world.createBody(bodyDef);
         CircleShape playerCircle = new CircleShape();
-        playerCircle.setRadius(12f);
+        playerCircle.setRadius(game.player.radius);
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = playerCircle;
         fixtureDef.density = 0.5f;
@@ -151,6 +151,7 @@ public class PlayScreen implements Screen{
         creatures.add(troll);
         creatures.add(goblin);
         creatures.add(wolf);
+        game.creatures = creatures;
         
 
         //add bodies of animals
@@ -158,10 +159,10 @@ public class PlayScreen implements Screen{
             System.out.println("adding crea body...");
             BodyDef creaBodyDef = new BodyDef();
             creaBodyDef.type = BodyDef.BodyType.KinematicBody;
-            creaBodyDef.position.set(crea.position.x +64 +10, crea.position.y +64 -10); //todo set offset in crea class
+            creaBodyDef.position.set(crea.position.x, crea.position.y); //todo set offset in crea class
             Body body = world.createBody(creaBodyDef);
             CircleShape creaCirc = new CircleShape();
-            creaCirc.setRadius(12f); //TODO: set this by creature radius
+            creaCirc.setRadius(crea.radius);
             Fixture creaFix = body.createFixture(creaCirc, (float) 0.5);
 
         }
@@ -175,7 +176,7 @@ public class PlayScreen implements Screen{
 
         ui = new Interface(game);
 
-
+        /*
         hudBatch = new SpriteBatch();
         //Create camera
         float aspectRatio = (float) Gdx.graphics.getWidth() / (float) Gdx.graphics.getHeight();
@@ -198,7 +199,7 @@ public class PlayScreen implements Screen{
         hudStage = new Stage(new FillViewport(game.width, game.height, camera));
         //hudStage.addActor(stick);
         //Gdx.input.setInputProcessor(hudStage);
-
+        */
 
     }
 
@@ -211,7 +212,7 @@ public class PlayScreen implements Screen{
         //float delta = Gdx.graphics.getDeltaTime();
         timer += delta;
 
-        hudStage.act();
+        //hudStage.act();
         ui.update(delta);
         fpsPrinter.update();
         //handleInput(delta, stick);
@@ -234,17 +235,16 @@ public class PlayScreen implements Screen{
         mapRenderer.getBatch().begin();
         game.player.render(mapRenderer.getBatch());
         //System.out.print(mapRenderer.getUnitScale());
-        for (Creature crea : creatures) {
+        for (Creature crea : game.creatures) {
             crea.update(delta);
             crea.render(mapRenderer.getBatch());
-            
         }
         //spider.update(delta);
         //wolf.update(delta);
         mapRenderer.getBatch().end();
 
 
-        hudStage.draw();
+        //hudStage.draw();
         debugRenderer.render(world, cam.combined); //cam for map camera for hud
         ui.render();
         if(game.debug > 0) fpsPrinter.render();

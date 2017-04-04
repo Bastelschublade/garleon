@@ -12,10 +12,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad.TouchpadStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import de.sarbot.garleon.GarleonGame;
 import de.sarbot.garleon.Tools;
+
+import java.util.ArrayList;
 
 /**
  * Created by sarbot on 23.03.17.
@@ -43,8 +46,10 @@ public class Interface implements Disposable {
 
     public class CustomListener extends ClickListener{
         Player player;
-        public CustomListener(Player player){
+        Array<Creature> creatures;
+        public CustomListener(Player player, Array<Creature> creatures){
             this.player = player;
+            this.creatures = creatures;
         }
 
         @Override
@@ -52,7 +57,7 @@ public class Interface implements Disposable {
             player.state = Player.State.Hitting;
             player.stateTime = 0;
             player.meleeSnd.play();
-            player.melee();
+            player.melee(creatures);
         }
 
     }
@@ -94,10 +99,10 @@ public class Interface implements Disposable {
         actionButton2 = new Button(actionBS);
         actionButton3 = new Button(actionBS);
         actionButton4 = new Button(actionBS);
-        actionButton1.addListener(new CustomListener(game.player));
-        actionButton2.addListener(new CustomListener(game.player));
-        actionButton3.addListener(new CustomListener(game.player));
-        actionButton4.addListener(new CustomListener(game.player));
+        actionButton1.addListener(new CustomListener(game.player, game.creatures));
+        actionButton2.addListener(new CustomListener(game.player, game.creatures));
+        actionButton3.addListener(new CustomListener(game.player, game.creatures));
+        actionButton4.addListener(new CustomListener(game.player, game.creatures));
         //actionButton.setBackground(skin.getDrawable("button"));
         actionTable.row();
         actionTable.add(actionButton1);

@@ -12,9 +12,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import de.sarbot.garleon.Objects.Creature;
 import de.sarbot.garleon.Screens.BootScreen;
 import de.sarbot.garleon.Objects.Player;
+
+import java.util.ArrayList;
 
 public class GarleonGame extends Game {
     //TODO: sinnvoll grafiken hier zu laden, oder werden die bei jedem übergeben game=gam kopiert neu geschrieben?
@@ -29,6 +33,8 @@ public class GarleonGame extends Game {
     public int debug; //0 off, 1 basic, 2 loops, 3 everything
 
     public Player player;
+    public Array<Creature> creatures;
+
 
 
 
