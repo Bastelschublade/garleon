@@ -15,11 +15,13 @@ public class Orc extends Human {
         super.position.x = x;
         super.position.y = y;
         super.maxHealth = lvl * 100;
+        super.currentHealth = maxHealth;
 
         //TODO: maybe has to be same sized texture (exact)
         super.texture = new Texture("creatures/orc.png");
         super.state = State.Running;
         super.setupTextures(0,8, 8, 16, 16, 20, 20, 28);
+        super.hpBarOffset = 100;
 
         super.state = State.Running;
         //TODO: call animation setup after new texture either setter in creature or all setup in seperate method and call

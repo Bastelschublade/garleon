@@ -52,6 +52,7 @@ public class Interface implements Disposable {
             player.state = Player.State.Hitting;
             player.stateTime = 0;
             player.meleeSnd.play();
+            player.melee();
         }
 
     }

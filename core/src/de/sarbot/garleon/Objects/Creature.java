@@ -4,10 +4,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
 import de.sarbot.garleon.Tools;
 
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import java.util.ArrayList;
 /**
  * Created by sarbot on 25.03.17.
  */
-public class Creature {
+public class Creature implements Disposable{
 
     public Vector2 position;
     public Vector2 size;
@@ -32,6 +35,13 @@ public class Creature {
     public Body body;
     public BodyDef bodyDef;
 
+    //private Skin Creatures;
+    private Skin skin;
+    private TextureAtlas atlas;
+    public Vector2 hpBarSize;
+    public float hpBarOffset;
+    public float hpRel;
+
 
     private TextureRegion[][] regions;
     private TextureRegion[][] regionsWalk;
@@ -44,6 +54,8 @@ public class Creature {
     private float stateTime;
     private float speednorm;
 
+
+
     public enum State {Idle, Running, Dieing, Hitting};
     public Creature.State state;
 
@@ -52,14 +64,19 @@ public class Creature {
     public Creature(){
         position = new Vector2(3500,0);
         name = "unnamed Creature";
-        size = new Vector2(10,10);
+        size = new Vector2(128,128);
         scale = 1;
         maxHealth = 100;
         currentHealth = maxHealth;
+        hpRel = 1;
         alive = true;
         velocity = new Vector2(0,0);
         group = "none";
         radius = 12;
+        hpBarSize = new Vector2(30,4);
+        hpBarOffset = 100;
+        atlas = new TextureAtlas("ui/interface.pack");
+        skin = new Skin(atlas);
 
 
         //copy from player class
@@ -74,6 +91,7 @@ public class Creature {
         speednorm = Tools.isoNorm(velocity.x, velocity.y);
         position.x += velocity.x*delta/speednorm;
         position.y += velocity.y*delta/speednorm;
+        hpRel = currentHealth/maxHealth;
 
     }
 
@@ -96,6 +114,7 @@ public class Creature {
                 break;
         }
         batch.draw(stateAnimation.getKeyFrame(stateTime), position.x, position.y, 150, 150);
+        drawBar(batch);
         //batch.draw(texture, 0,-10);
     }
 
@@ -138,6 +157,35 @@ public class Creature {
             dieAnimations.add(animDie);
 
         }
+    }
+
+    public void drawBar(Batch batch){
+        float posX = position.x + (size.x - hpBarSize.x)/2;
+        skin.getDrawable("hp_back").draw(batch, posX, position.y + hpBarOffset,
+                hpBarSize.x, hpBarSize.y);
+
+        if(hpRel > 0.8) {
+            skin.getDrawable("hp_green").draw(
+                    batch, posX, position.y + hpBarOffset,
+                    hpBarSize.x * hpRel, hpBarSize.y);
+        }
+        else if (hpRel > 0.3){
+            skin.getDrawable("hp_orange").draw(
+                    batch, posX, position.y + hpBarOffset,
+                    hpBarSize.x* hpRel, hpBarSize.y);
+        }
+        else{
+            skin.getDrawable("hp_red").draw(
+                    batch, posX, position.y + hpBarOffset,
+                    hpBarSize.x * hpRel, hpBarSize.y);
+        }
+
+    }
+
+
+    @Override
+    public void dispose() {
+        texture.dispose();
     }
 
 }

@@ -29,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+import de.sarbot.garleon.FrameRate;
 import de.sarbot.garleon.GarleonGame;
 import de.sarbot.garleon.Objects.Creature;
 import de.sarbot.garleon.Objects.Creatures.*;
@@ -67,7 +68,7 @@ public class PlayScreen implements Screen{
     private float blockSpeed;
     private float screenX, screenY;
 
-    private World world;
+    public World world;
     private Box2DDebugRenderer debugRenderer;
     private CircleShape playerCircle;
     private CircleShape testCircle;
@@ -83,6 +84,8 @@ public class PlayScreen implements Screen{
     private Wolf wolf;
     private Troll troll;
     private Goblin goblin;
+
+    private FrameRate fpsPrinter;
 
     private Music music;
 
@@ -102,6 +105,8 @@ public class PlayScreen implements Screen{
         music.setLooping(true);
         music.setVolume(0.3f);
         music.play();
+
+        fpsPrinter = new FrameRate();
 
 
         bodies = new Array<Body>();
@@ -208,6 +213,7 @@ public class PlayScreen implements Screen{
 
         hudStage.act();
         ui.update(delta);
+        fpsPrinter.update();
         //handleInput(delta, stick);
 
         //playerBody is not used any longer
@@ -241,6 +247,7 @@ public class PlayScreen implements Screen{
         hudStage.draw();
         debugRenderer.render(world, cam.combined); //cam for map camera for hud
         ui.render();
+        if(game.debug > 0) fpsPrinter.render();
         world.step(1/60f, 6, 2);
 
     }

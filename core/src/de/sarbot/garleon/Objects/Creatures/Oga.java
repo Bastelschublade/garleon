@@ -15,11 +15,13 @@ public class Oga extends Human {
         super.position.x = x;
         super.position.y = y;
         super.maxHealth = lvl * 100;
+        super.currentHealth = maxHealth;
 
         //TODO: maybe has to be same sized texture (exact)
         super.texture = new Texture("creatures/oga.png");
         super.state = State.Running;
         super.setupTextures(0,4, 4, 12, 12, 16, 20, 24);
+        super.hpBarOffset = 130;
 
         //TODO: call animation setup after new texture either setter in creature or all setup in seperate method and call
 

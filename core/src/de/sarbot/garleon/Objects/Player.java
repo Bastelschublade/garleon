@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Disposable;
@@ -26,6 +27,7 @@ public class Player implements Disposable {
     public State state;
     public Body body;
     public float attackSpeed;
+    public float angle;
 
 
     public float walkSpeed;
@@ -57,6 +59,7 @@ public class Player implements Disposable {
         attackSpeed = 1; //factor for animation speed and state toggle not cooldown
 
         meleeSnd = Gdx.audio.newSound(Gdx.files.internal("sounds/melee.wav"));
+        angle = 0;
 
         //TODO sinnvoll erstellen body/player eigenschaften noch trennbar?
         /*
@@ -133,6 +136,7 @@ public class Player implements Disposable {
             float norm = Tools.isoNorm(direction.x, direction.y);
             if (norm > 0.1) {
                 orientation = Tools.vector2orientation(direction);
+                angle = direction.angle();
                 state = State.Running;
             }
         }
@@ -161,6 +165,15 @@ public class Player implements Disposable {
                 break;
         }
         batch.draw(stateAnimation.getKeyFrame(stateTime), position.x, position.y, 100, 100);
+    }
+
+    public Vector2 melee(){
+        Vector2 target = new Vector2(position.x, position.y);
+        target.x += MathUtils.cosDeg(angle);
+        target.y += MathUtils.sinDeg(angle);
+        System.out.println(angle);
+        return target;
+
     }
 
     @Override

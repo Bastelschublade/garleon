@@ -19,6 +19,7 @@ public class Wolf extends Animal {
         super.texture = new Texture("creatures/wolf.png");
         super.state = State.Running;
         super.setupTextures(0,8, 8, 16, 16, 20, 20, 28);
+        super.hpBarOffset = 80;
 
         //TODO: call animation setup after new texture either setter in creature or all setup in seperate method and call
 
