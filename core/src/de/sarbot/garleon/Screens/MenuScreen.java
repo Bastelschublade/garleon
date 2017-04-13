@@ -81,7 +81,7 @@ public class MenuScreen implements Screen {
                 game.setScreen(new PlayScreen(game));
             }
         });
-        buttonLevel = new TextButton("LEVEL", textButtonStyle);
+        buttonLevel = new TextButton("Options", textButtonStyle);
         buttonLevel.pad(0,10,0,10);
         buttonLevel.addListener(new ClickListener() {
             @Override
