@@ -3,51 +3,65 @@ interface.png
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+menubutton
+  rotate: false
+  xy: 1, 135
+  size: 311, 64
+  orig: 311, 64
+  offset: 0, 0
+  index: -1
+menubuttonp
+  rotate: false
+  xy: 1, 69
+  size: 311, 64
+  orig: 311, 64
+  offset: 0, 0
+  index: -1
 hp_orange
   rotate: false
-  xy: 0, 96
+  xy: 314, 167
   size: 256, 32
   orig: 256, 32
   offset: 0, 0
   index: -1
 hp_green
   rotate: false
-  xy: 0, 64
+  xy: 1, 35
   size: 256, 32
   orig: 256, 32
   offset: 0, 0
   index: -1
 hp_fore2
   rotate: false
-  xy: 256, 96
+  xy: 314, 133
   size: 256, 32
   orig: 256, 32
   offset: 0, 0
   index: -1
 hp_back
   rotate: false
-  xy: 0, 32
+  xy: 572, 167
   size: 256, 32
   orig: 256, 32
   offset: 0, 0
   index: -1
 hp_fore1
   rotate: false
-  xy: 0, 0
+  xy: 1, 1
   size: 256, 32
   orig: 256, 32
   offset: 0, 0
   index: -1
 hp_red
   rotate: false
-  xy: 256, 64
+  xy: 314, 99
   size: 256, 32
   orig: 256, 32
   offset: 0, 0
   index: -1
 button
   rotate: false
-  xy: 512, 46
+  xy: 572, 83
   size: 82, 82
   orig: 82, 82
   offset: 0, 0
