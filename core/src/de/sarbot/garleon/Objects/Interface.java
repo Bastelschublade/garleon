@@ -40,6 +40,9 @@ public class Interface implements Disposable {
     private Button actionButton2;
     private Button actionButton3;
     private Button actionButton4;
+    public ArrayList<FloatMessage> flowMessages;
+    public FloatMessanger floatMessanger;
+
 
 
     private Sound melee;
@@ -57,7 +60,7 @@ public class Interface implements Disposable {
             player.state = Player.State.Hitting;
             player.stateTime = 0;
             player.meleeSnd.play();
-            player.melee(creatures);
+            player.melee(creatures, floatMessanger);
         }
 
     }
@@ -88,6 +91,9 @@ public class Interface implements Disposable {
         //setBounds(x,y,width,height)
         stick.setBounds(15, 15, 150, 150);
 
+        floatMessanger = new FloatMessanger();
+        floatMessanger.setBounds( 100, 100, 50, 50);
+
         actionTable = new Table(skin);
         actionTable.setBounds(game.width-100,200, 50, 50);
         actionBS = new Button.ButtonStyle();
@@ -117,6 +123,7 @@ public class Interface implements Disposable {
         Gdx.input.setInputProcessor(stage);
         stage.addActor(stick);
         stage.addActor(actionTable);
+        stage.addActor(floatMessanger);
 
 
     }

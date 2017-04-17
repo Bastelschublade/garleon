@@ -175,7 +175,7 @@ public class Player implements Disposable {
         batch.draw(stateAnimation.getKeyFrame(stateTime), position.x + textureOffset.x, position.y + textureOffset.y, 128, 128);
     }
 
-    public Vector2 melee(Array<Creature> creatures){
+    public Vector2 melee(Array<Creature> creatures, FloatMessanger messanger){
         Vector2 target = new Vector2(position.x, position.y);
         target.x += MathUtils.cosDeg(angle);
         target.y += MathUtils.sinDeg(angle);
@@ -188,13 +188,15 @@ public class Player implements Disposable {
             if(delta.len() < range + radius + crea.radius){
                 float dmg = 0.1f * crea.currentHealth;
                 crea.currentHealth -= dmg;
-                Tools.message( "Dmg: " + dmg, 0);
+                //Tools.message( "Dmg: " + dmg, 0);
+                messanger.newMessage("-"+ (int) dmg, crea.position.x-position.x+390, crea.position.y-position.y+250);
+
 
             }
         }
 
         //option2 check distance from attac target (angle->range) this will result in an circle impact infront of the player
-        System.out.println(angle);
+
         return target;
 
     }
