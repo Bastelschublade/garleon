@@ -1,12 +1,10 @@
-package de.sarbot.garleon.Objects;
+package de.sarbot.garleon.Objects.Ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -16,6 +14,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import de.sarbot.garleon.GarleonGame;
+import de.sarbot.garleon.Objects.*;
 import de.sarbot.garleon.Tools;
 
 import java.util.ArrayList;
@@ -146,7 +145,6 @@ public class Interface implements Disposable {
     }
 
     public void handleInput(float delta, Joystick stick){
-
 
         game.player.direction.x = 0;
         game.player.direction.y = 0;
