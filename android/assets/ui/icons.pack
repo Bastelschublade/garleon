@@ -1,0 +1,19 @@
+
+icons.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+
+knife
+ rotate: false
+ xy: 1, 1
+ size: 32, 32
+ offset: 0, 0
+ index: -1
+
+axe
+ rotate: false
+ xy: 1, 33
+ size: 32, 32
+ offset: 0, 0
+ index: -1

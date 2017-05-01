@@ -27,6 +27,7 @@ public class Interface implements Disposable {
 
     private GarleonGame game;
     public Stage stage;
+    public Stage charWindowStage;
     private OrthographicCamera camera;
     private Skin skin;
     private TextureAtlas atlas;
@@ -74,6 +75,7 @@ public class Interface implements Disposable {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 10f*aspectRatio, 10f);
         stage = new Stage(new FillViewport(game.width, game.height, camera));
+        charWindowStage = new Stage(new FillViewport(game.width, game.height, camera));
         atlas = new TextureAtlas("ui/rpg1.pack");
         skin = new Skin(atlas);
         //buttons
