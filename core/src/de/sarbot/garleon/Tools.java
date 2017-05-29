@@ -34,6 +34,26 @@ public class Tools {
 
     public static Vector2 tiled2world(float x, float y){
         Vector2 real = new Vector2(0,0);
+        //this seems to turn things around for the creature ways not the debug collision physic world
+        real.x += x;
+        real.y -= 0.5*x;
+        real.x += y;
+        real.y += 0.5*y;
+        return real;
+
+    }
+
+    public static Vector2 tiled2world2(float x, float y){
+        Vector2 real = new Vector2();
+        real.x = x;
+        real.y = y - 1600;
+        return real;
+    }
+
+
+    public static Vector2 tiled2world3(float x, float y){
+        Vector2 real = new Vector2(0,0);
+        //this seems to turn things around for the creature ways not the debug collision physic world
         real.x += x;
         real.y -= 0.5*x;
         real.x += y;
@@ -46,4 +66,6 @@ public class Tools {
         //more important messages have higher tag, 5 is important 10 is like the world is going down NOW!
         System.out.println("Message Level " + tag + ": " + msg);
     }
+
+
 }

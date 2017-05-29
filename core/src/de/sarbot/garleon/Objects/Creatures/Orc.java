@@ -3,17 +3,19 @@ package de.sarbot.garleon.Objects.Creatures;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by sarbot on 25.03.17.
  */
 public class Orc extends Human {
 
-    public Orc(int lvl, float x, float y, String name){
-        super();
+    public Orc(int lvl, String name, Array<Vector2> positions){
+        super(positions);
         super.name = name;
-        super.position.x = x;
-        super.position.y = y;
+        super.position.x = positions.get(0).x;
+        super.position.y = positions.get(0).y;
         super.maxHealth = lvl * 100;
         super.currentHealth = maxHealth;
 

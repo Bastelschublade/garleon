@@ -2,17 +2,19 @@ package de.sarbot.garleon.Objects.Creatures;
 
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by sarbot on 25.03.17.
  */
 public class Troll extends Human {
 
-    public Troll(int lvl, float x, float y, String name){
-        super();
+    public Troll(int lvl, String name, Array<Vector2> positions){
+        super(positions);
         super.name = name;
-        super.position.x = x;
-        super.position.y = y;
+        super.position.x = positions.get(0).x;
+        super.position.y = positions.get(0).y;
         super.maxHealth = lvl * 100;
 
         //TODO: maybe has to be same sized texture (exact)

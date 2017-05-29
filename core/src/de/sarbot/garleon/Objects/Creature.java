@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Disposable;
 import de.sarbot.garleon.Tools;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by sarbot on 25.03.17.
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 public class Creature implements Disposable{
 
     public Vector2 position;
+    public Array<Vector2> targets;
     public Vector2 size;
     public float scale;
     public float maxHealth;
@@ -35,6 +37,7 @@ public class Creature implements Disposable{
     public Body body;
     public BodyDef bodyDef;
 
+
     //private Skin Creatures;
     private Skin skin;
     private TextureAtlas atlas;
@@ -42,6 +45,10 @@ public class Creature implements Disposable{
     public float hpBarOffset;
     public float hpRel;
     private float textureOffset;
+    private float speed;
+    private float walkspeed;
+    private float runspeed;
+    private Random rand;
 
 
     private TextureRegion[][] regions;
@@ -54,16 +61,29 @@ public class Creature implements Disposable{
     private TextureRegion[][] dieRegions;
     private float stateTime;
     private float speednorm;
+    private Array<Vector2> positions;
+    private float stayTimer;
+    private float stayTime;
+    private Vector2 destination;
+    private int orientation;
 
-
-
-    public enum State {Idle, Running, Dieing, Hitting};
+    public enum State {Idle, Running, Dieing, Hitting, Walking};
     public Creature.State state;
+    public boolean combat;
+    public String patrolstate; //moving, waiting
 
 
 
-    public Creature(){
-        position = new Vector2(3500,0);
+
+
+    public Creature(Array<Vector2> poss){
+        positions = poss;
+        destination = positions.get(0).cpy();
+        combat = false;
+        stayTimer = 0;
+        stayTime = 7;
+        //position = new Vector2(3500,0);
+        position = positions.get(0).cpy();
         textureOffset = 20; //the feets of the creature
         name = "unnamed Creature";
         size = new Vector2(128,128);
@@ -79,6 +99,11 @@ public class Creature implements Disposable{
         hpBarOffset = 50;
         atlas = new TextureAtlas("ui/interface.pack");
         skin = new Skin(atlas);
+        runspeed = 100;
+        walkspeed = 50;
+        speed = walkspeed;
+        rand = new Random();
+        orientation = 0;
 
 
         //copy from player class
@@ -89,16 +114,47 @@ public class Creature implements Disposable{
     }
 
     public void update(float delta){
+        //combat = true;
+        if(!combat){ //out of combat
+            speed = walkspeed;
+            stayTimer += delta;
+            if(stayTimer < stayTime){ //staytime not over, keep staying
+                state = Creature.State.Idle; //TODO: same as just State.Idle?
+                velocity.x = 0;
+                velocity.y = 0;
+            }
+            else{ //staytime is over, start walk
+                //System.out.println("start moving creature");
+                state = Creature.State.Walking;
+                System.out.println("destx: " + destination.x + " , desty: " + destination.y + " , pos.x: " + position.x + " , pos.y: " + position.y);
+                velocity.x = destination.x - position.x;
+                velocity.y = destination.y - position.y; //TODO: calc direction to target
+                orientation = Tools.vector2orientation(destination.cpy().sub(position.cpy()));
+
+                if((Math.sqrt(velocity.x*velocity.x + velocity.y * velocity.y) < speed/10) || (stayTime > 60)){
+                    System.out.println("crature reached a target and waits now");
+                    stayTimer = 0;
+                    destination = positions.random(); //create new target after break increase for no random move
+                    System.out.println("new target: " + destination.x + ", " + destination.y);
+                }
+            }
+        }
+        else { //combat
+            speed = runspeed;
+        }
+
+
+
+        //move the texture TODO: move the body in the world, than set the texture to body coords (collision)
         stateTime += delta;
         speednorm = Tools.isoNorm(velocity.x, velocity.y);
-        position.x += velocity.x*delta/speednorm;
-        position.y += velocity.y*delta/speednorm;
+        //System.out.println(speednorm);
+        position.x += velocity.x*delta*speed/speednorm;
+        position.y += velocity.y*delta*speed/speednorm;
         hpRel = currentHealth/maxHealth;
-
     }
 
     public void render(Batch batch){
-        int orientation = 0;
 
         Animation<TextureRegion> stateAnimation = idleAnimations.get(0);
         switch (state){
@@ -113,7 +169,10 @@ public class Creature implements Disposable{
                 break;
             case Running:
                 stateAnimation = walkAnimations.get(orientation);
+            case Walking:
+                stateAnimation = walkAnimations.get(orientation);
                 break;
+
         }
         batch.draw(stateAnimation.getKeyFrame(stateTime), position.x-size.x/2, position.y-size.y/2 + textureOffset, size.x, size.y);
         drawBar(batch);

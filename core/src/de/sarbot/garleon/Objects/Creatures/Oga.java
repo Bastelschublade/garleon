@@ -2,18 +2,20 @@ package de.sarbot.garleon.Objects.Creatures;
 
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Created by sarbot on 25.03.17.
  */
 public class Oga extends Human {
 
-    public Oga(int lvl, float x, float y, String name){
-        super();
+    public Oga(int lvl, String name, Array<Vector2> positions){
+        super(positions);
         super.name = name;
         super.frameDuration = (float) 0.1;
-        super.position.x = x;
-        super.position.y = y;
+        super.position.x = positions.get(0).x;
+        super.position.y = positions.get(0).y;
         super.maxHealth = lvl * 100;
         super.currentHealth = maxHealth;
 

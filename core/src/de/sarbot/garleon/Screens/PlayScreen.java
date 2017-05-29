@@ -136,11 +136,12 @@ public class PlayScreen implements Screen{
         batch = new SpriteBatch();
         map = new TmxMapLoader().load("maps/base.tmx");
         parseCollisionLayer();
-        parseMobLayer();
         mapRenderer = new IsometricTiledMapRenderer(map);
         timer = 0;
 
         creatures = new Array<Creature>();
+        creatures = parseMobLayer();
+        /*
         spider = new Spider(8,3500, -80,"Tekla");
         wolf = new Wolf( 8, 3500, -300, "hugo");
         oga = new Oga(8, 3200, -150, "tibbers");
@@ -149,8 +150,9 @@ public class PlayScreen implements Screen{
         creatures.add(spider);
         creatures.add(oga);
         creatures.add(troll);
-        creatures.add(goblin);
+        //creatures.add(goblin);
         creatures.add(wolf);
+        */
         game.creatures = creatures;
         
 
@@ -432,7 +434,8 @@ public class PlayScreen implements Screen{
 
     }
 
-    private void parseMobLayer(){
+    private Array<Creature> parseMobLayer(){
+        creatures = new Array<Creature>();
         if(game.debug>0){System.out.println("create Creatures from Map");}
         MapLayer mobLayer = map.getLayers().get("creatureObjects");
 
@@ -449,16 +452,39 @@ public class PlayScreen implements Screen{
             Shape shape;
             Vector2 pos;
             pos = new Vector2();
+            Array<Vector2> posis = new Array<Vector2>();
             if (obj instanceof PolygonMapObject){
+
+                PolygonMapObject polyObj = (PolygonMapObject) obj;
                 System.out.println("found polygon: "+ obj.getName());
-                shape = getPolygon((PolygonMapObject) obj);
+                //shape = getPolygon((PolygonMapObject) obj);
+                /*
                 pos.x = ((PolygonMapObject) obj).getPolygon().getX();
                 pos.y = ((PolygonMapObject) obj).getPolygon().getY();
                 pos = Tools.tiled2world(pos.x, pos.y);
-                System.out.println(pos);
-                if(obj.getName() == "goblin"){
+                */
+                //System.out.println(pos);
+                if(obj.getProperties().get("creaturetype").equals("goblin")){
                     System.out.println("creating a goblin");
+                    //vertices are edge positions relative to X and Y of the Polygon
+                    //maybe an Array like [x1, y1, x2, y2, x3, y3]
+                    //transformed vertices are not relative
+                    //float[] verts = polyObj.getPolygon().getTransformedVertices();
+                    System.out.println("Vertices: " );
+                    //System.out.print(verts);
+                    float[] verts = polyObj.getPolygon().getVertices();
+                    Array<Vector2> positions = new Array<Vector2>();
+                    for(int i=0; i<verts.length; i+=2){
+                        //switched x,y here for test or does without transformed work as expected?
+                        //TODO: iwie verdreht hier mit den koordinaten -> klartext debuggen
+                        //scheint das gleiche wie transformed vertices zu sein gleiches problem
+                        Vector2 dot = Tools.tiled2world(verts[i]+polyObj.getPolygon().getX(), verts[i+1]+polyObj.getPolygon().getY());
+                        positions.add(dot);
+                        //System.out.println(verts[0]);
+                    }
 
+                    goblin = new Goblin((int) 13, "Ringo", positions);
+                    creatures.add(goblin);
 
                 }
             }
@@ -484,8 +510,9 @@ public class PlayScreen implements Screen{
                 continue;
             }
 
-            float lvl = Float.parseFloat(obj.getProperties().get("level").toString());
 
+
+            float lvl = Float.parseFloat(obj.getProperties().get("level").toString());
 
             BodyDef bd = new BodyDef();
             bd.type = BodyDef.BodyType.KinematicBody;
@@ -496,8 +523,9 @@ public class PlayScreen implements Screen{
             body.createFixture(shape, 1);
             bodies.add(body);
             shape.dispose();
+            //TODO: create creature wich owns the body object or is related somehow
         }
-        return;
+        return creatures;
     }
 
 }

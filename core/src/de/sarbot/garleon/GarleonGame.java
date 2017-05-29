@@ -15,6 +15,7 @@ import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import de.sarbot.garleon.Objects.Creature;
+import de.sarbot.garleon.Objects.Npc;
 import de.sarbot.garleon.Screens.BootScreen;
 import de.sarbot.garleon.Objects.Player;
 
@@ -34,6 +35,7 @@ public class GarleonGame extends Game {
 
     public Player player;
     public Array<Creature> creatures;
+    public Array<Npc> npcs;
 
 
 
